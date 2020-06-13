@@ -11,6 +11,8 @@ import tensorflow as tf
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix, accuracy_score
+
 
 #Verification of tensorflow version
 # print(tf.__version__)
@@ -36,6 +38,7 @@ x[:,2] = le.fit_transform(x[:,2])
 # using one hot encoding to encode all values
 ct = ColumnTransformer(transformers=[('encoder', OneHotEncoder(), [1])], remainder='passthrough')
 x = np.array(ct.fit_transform(x))
+
 
 # splitting the data set into the training set and the testing set
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2, random_state=0)
@@ -64,5 +67,16 @@ ann.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accura
 #Training the ANN on the training set
 ann.fit(x_train, y_train, batch_size = 32, epochs = 100)          
 
+#Homework to predict customer
+x_input = [[1,0,0,600,1,40,3,60000,2,1,1,50000]]
+probability = ann.predict(sc.transform(x_input))
 
+print(probability)
+print(probability > 0.5)
 
+#confusion matrix
+y_pred = ann.predict(x_test) 
+y_pred = y_pred > 0.5
+cm = confusion_matrix(y_test, y_pred)   
+print(cm)
+accuracy_score(y_test, y_pred)
